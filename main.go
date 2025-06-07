@@ -60,12 +60,17 @@ func tryOneDir(root string, jobs chan string, count *int) error {
 	})
 }
 
-var concurrency = flag.Int("c", 8, "Number of files to open concurrently (recommended: 4–16)")
+var concurrency = flag.Uint("c", 8, "Number of files to open concurrently (recommended: 4–16)")
 
 func mains(args []string) error {
 	if len(args) <= 0 {
 		flag.Usage()
 		return nil
+	}
+
+	c := int(*concurrency)
+	if c <= 0 || c > 16 {
+		return errors.New("invalid value for -c: must be between 1 and 16")
 	}
 
 	count := 0
@@ -77,7 +82,7 @@ func mains(args []string) error {
 		fmt.Printf("Found files: %d\n", count)
 	}()
 
-	jobs, closer := newPool(*concurrency)
+	jobs, closer := newPool(c)
 	defer closer()
 
 	var errs []error

@@ -8,6 +8,7 @@ import (
 	"os"
 	"path/filepath"
 	"sync"
+	"time"
 )
 
 func openAndClose(id int, path string) error {
@@ -68,8 +69,12 @@ func mains(args []string) error {
 	}
 
 	count := 0
+	start := time.Now()
 	defer func() {
-		fmt.Printf("Found %d files. Starting download triggers...\n", count)
+		elapsed := time.Since(start)
+		fmt.Println("\nDone.")
+		fmt.Printf("Elapsed time: %s\n", elapsed)
+		fmt.Printf("Found files: %d\n", count)
 	}()
 
 	jobs, closer := newPool(*concurrency)
